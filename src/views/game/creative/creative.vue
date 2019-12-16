@@ -209,7 +209,7 @@
             clearSelectAll() {
                 this.$refs.table.selectAll(false);
             },
-            submitAdvert() {
+            submitCreative() {
                 this.$refs.creativeForm.validate(valid => {
                     if (valid) {
                         if (this.modalType == 0) {
@@ -256,7 +256,7 @@
                     }
                 });
             },
-            cancelAdvert() {
+            cancelCreative() {
                 this.creativeModalVisible = false;
             },
             add() {

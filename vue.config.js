@@ -2,9 +2,9 @@ const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
 
-    publicPath: '/baobao/',
-    outputDir: 'baobao',
-    assetsDir: 'static',
+    // publicPath: '/baobao/',
+    // outputDir: 'baobao',
+    // assetsDir: 'static',
     devServer: {
         host: '0.0.0.0',
         port: 9999,
