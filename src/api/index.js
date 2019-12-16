@@ -467,3 +467,19 @@ export const editAdvert = (params) => {
 export const deleteAdvert = (ids, params) => {
     return deleteRequest(`/game/delAdvertByIds/${ids}`, params)
 }
+/**
+ *
+ * 分服管理----------------------------------------------------------------------
+ */
+export const queryAllClientReq = (params) => {
+    return getRequest('/game/queryAllServer', params)
+}
+export const addClient = (params) => {
+    return postRequest('/game/addServer', params)
+}
+export const editClient = (params) => {
+    return postRequest('/game/updateServer', params)
+}
+export const deleteClient = (ids, params) => {
+    return deleteRequest(`/game/delServerByIds/${ids}`, params)
+}
