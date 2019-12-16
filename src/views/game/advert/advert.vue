@@ -193,7 +193,7 @@
                     if (res.success) {
                         this.data = res.result[1].records;
                         this.games = res.result[0].records;
-                        this.total = res.result.total;
+                        this.total = res.result[1].records.length;
                     }
                 });
             },

@@ -12,6 +12,14 @@ module.exports = {
             '/baobao-admin': {
                 target: 'http://127.0.0.1:11111',  // 请求本地 拦截/rbac代理到后台项目
                 ws: true
+            },
+            '/report-from': {
+                target: 'http://127.0.0.1:8081',
+                ws: true,//如果要代理websockets,配置这个参数
+                changeOrigin: true,//是否跨域
+                pathRewrite: {
+                    '^/report-from': ''
+                }
             }
         }
     },

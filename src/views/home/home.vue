@@ -21,7 +21,7 @@
                                         <Row class-name="made-child-con-middle" type="flex" align="middle">
                                             <div>
                                                 <b class="card-user-infor-name">{{ username }}</b>
-                                                <p>宝宝超市后台管理系统 欢迎您的使用</p>
+                                                <p>萌神数据分析后台管理系统 欢迎您的使用</p>
                                             </div>
                                         </Row>
                                     </Col>

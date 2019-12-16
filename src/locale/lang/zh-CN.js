@@ -1,5 +1,5 @@
 export default {
-    baobao: '宝宝超市后台管理系统',
+    baobao: '萌神数据分析后台管理系统',
     usernameLogin: '账户密码登录',
     forgetPass: '忘记密码',
     otherLogin: '其他方式登录',

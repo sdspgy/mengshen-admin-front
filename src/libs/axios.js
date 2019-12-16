@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { getStore, setStore } from './storage';
-import { router } from '../router/index';
-import { Message } from 'iview';
+import {getStore, setStore} from './storage';
+import {router} from '../router/index';
+import {Message} from 'iview';
 import Cookies from 'js-cookie';
 
 
@@ -137,7 +137,7 @@ export const putRequest = (url, params) => {
 };
 
 export const deleteRequest = (url, params) => {
-    let accessToken = ('accessToken');
+    let accessToken = getStore('accessToken');
     return axios({
         method: 'delete',
         url: `${basePath}${url}`,
@@ -195,8 +195,7 @@ export const postRequestWithGame = (url, params) => {
 };
 
 
-
-export const postRequestWithJson = (url,params) =>{
+export const postRequestWithJson = (url, params) => {
     let accessToken = getStore("accessToken");
     return axios({
         method: 'post',
@@ -216,7 +215,7 @@ export const postRequestWithJson = (url,params) =>{
     });
 }
 
-export const postRequestWithUpload = (url,params) =>{
+export const postRequestWithUpload = (url, params) => {
     let accessToken = getStore("accessToken");
     return axios({
         method: 'post',
@@ -232,7 +231,7 @@ export const postRequestWithUpload = (url,params) =>{
     });
 }
 
-export const getRequestWithBlob = (url,params) =>{
+export const getRequestWithBlob = (url, params) => {
     let ret = '';
     for (let it in params) {
         ret += encodeURIComponent(it) + '=' + encodeURIComponent(params[it]) + '&';
@@ -249,7 +248,45 @@ export const getRequestWithBlob = (url,params) =>{
     });
 }
 
+/**
+ * 小程序专属--------------------------------
+ */
 
+export const basePathMinipro = '/report-from';
 
+export const getRequestMinipro = (url, params) => {
+    return axios({
+        method: 'get',
+        url: `${basePathMinipro}${url}`,
+        params: params,
+    });
+}
+
+export const postRequestMinipro = (url, params) => {
+    return axios({
+        method: 'post',
+        url: `${basePathMinipro}${url}`,
+        data: params,
+        transformRequest: [function (data) {
+            let ret = '';
+            for (let it in data) {
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+            }
+            return ret;
+        }],
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    });
+}
+
+export const deleteRequestMiniprols
+    = (url, params) => {
+    return axios({
+        method: 'delete',
+        url: `${basePathMinipro}${url}`,
+        params: params,
+    });
+}
 
 

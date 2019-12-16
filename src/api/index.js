@@ -11,7 +11,10 @@ import {
     getRequestWithBlob,
     postRequestWithUpload,
     basePath,
-    postReq
+    postReq,
+    getRequestMinipro,
+    postRequestMinipro,
+    deleteRequestMinipro
 } from '@/libs/axios';
 
 // 文件管理台用户头像接口
@@ -452,7 +455,6 @@ export const deleteCreative = (ids, params) => {
     return deleteRequest(`/game/delCreativeByIds/${ids}`, params)
 }
 /**
- *
  * 广告管理----------------------------------------------------------------------
  */
 export const queryAllAdvertReq = (params) => {
@@ -466,4 +468,10 @@ export const editAdvert = (params) => {
 }
 export const deleteAdvert = (ids, params) => {
     return deleteRequest(`/game/delAdvertByIds/${ids}`, params)
+}
+/**
+ * 小程序管理-----------------------------------------------------------------
+ */
+export const queryAllUser = (params) => {
+    return postRequestMinipro('/report/api/user/findAllUser', params)
 }

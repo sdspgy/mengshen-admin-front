@@ -7,7 +7,7 @@ export const loginRouter = {
     path: base+'/login',
     name: 'login',
     meta: {
-        title: '登录 - 宝宝超市后台管理系统'
+        title: '登录 - 萌神游戏数据分析后台管理系统'
     },
     component: () => import('@/views/Login.vue')
 };
