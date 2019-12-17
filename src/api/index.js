@@ -455,6 +455,7 @@ export const deleteCreative = (ids, params) => {
     return deleteRequest(`/game/delCreativeByIds/${ids}`, params)
 }
 /**
+ *
  * 广告管理----------------------------------------------------------------------
  */
 export const queryAllAdvertReq = (params) => {
