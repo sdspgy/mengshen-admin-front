@@ -210,7 +210,7 @@
             clearSelectAll() {
                 this.$refs.table.selectAll(false);
             },
-            submitAdvert() {
+            submitServer() {
                 debugger
                 this.$refs.serverForm.validate(valid => {
                     if (valid) {
