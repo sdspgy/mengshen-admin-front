@@ -14,7 +14,8 @@ import {
     postReq,
     getRequestMinipro,
     postRequestMinipro,
-    deleteRequestMinipro
+    deleteRequestMinipro,
+    downloadReport
 } from '@/libs/axios';
 
 // 文件管理台用户头像接口
@@ -491,4 +492,10 @@ export const deleteClient = (ids, params) => {
  */
 export const queryAllUser = (params) => {
     return postRequestMinipro('/report/api/user/findAllUser', params)
+}
+/**
+ * 日报下载---------------------------------------------------------------------
+ */
+export const downloadReportReq = (url) => {
+    return downloadReport(url)
 }

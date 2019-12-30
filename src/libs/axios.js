@@ -289,4 +289,13 @@ export const deleteRequestMiniprols
     });
 }
 
-
+/**
+ * 日报下载---------------------
+ */
+export const downloadReport
+    = (url) => {
+    return axios({
+        method: 'get',
+        url: url,
+    });
+}
