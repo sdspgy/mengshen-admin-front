@@ -189,7 +189,6 @@
             },
             queryAllServer() {
                 queryAllClientReq(this.searchForm).then(res => {
-                    debugger
                     // this.loading = false;
                     if (res.success) {
                         this.data = res.result[1].records;

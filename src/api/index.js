@@ -487,6 +487,22 @@ export const deleteClient = (ids, params) => {
     return deleteRequest(`/game/delServerByIds/${ids}`, params)
 }
 /**
+ *
+ * 游戏管理----------------------------------------------------------------------
+ */
+export const queryAllGameReq = (params) => {
+    return getRequest('/game/queryAllGame', params)
+}
+export const addGame = (params) => {
+    return postRequest('/game/addGame', params)
+}
+export const editGame = (params) => {
+    return postRequest('/game/updateGame', params)
+}
+export const deleteGame = (ids, params) => {
+       return deleteRequest(`/game/delGameByIds/${ids}`, params)
+}
+/**
  * 小程序管理-----------------------------------------------------------------
  */
 export const queryAllUser = (params) => {
