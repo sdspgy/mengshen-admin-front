@@ -244,8 +244,8 @@
                             editClient({
                                 id: this.serverForm.id,
                                 gameid: this.serverForm.gameid,
-                                serverid: this.serverForm.creativeid,
-                                serverName: this.serverForm.creativeName
+                                serverid: this.serverForm.serverid,
+                                serverName: this.serverForm.serverName
                             }).then(res => {
                                 this.submitLoading = false;
                                 if (res.success) {
