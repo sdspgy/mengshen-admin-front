@@ -34,7 +34,7 @@
         <Modal :title="modalTitle" v-model="serverModalVisible" :mask-closable="false" :width="500">
             <Form ref="gameForm" :model="gameForm" :label-width="80" :rules="gameFormValidate">
                 <!--                <FormItem label="游戏ID" prop="gameid"><Input v-model="creativeForm.gameid" placeholder=""/></FormItem>-->
-                <FormItem label="id" prop="parentId" :error="errorServerid"><Input
+                <FormItem label="id" prop="parentId" :error="errorServerid" v-if="hide" ><Input
                         v-model="gameForm.parentId"/></FormItem>
                 <FormItem label="游戏id" prop="gameid" :error="errorServerid"><Input
                         v-model="gameForm.gameid"/></FormItem>
@@ -336,6 +336,7 @@
                     etlStatus: '',
                     etlOrder: ''
                 },
+                hide:false,
                 games: []
             };
         },
@@ -458,6 +459,7 @@
                 this.modalTitle = '添加游戏';
                 this.$refs.gameForm.resetFields();
                 this.serverModalVisible = true;
+                this.hide = true;
             },
             edit(v) {
                 this.modalType = 1;
@@ -473,6 +475,7 @@
                 let data = JSON.parse(str);
                 this.gameForm = data;
                 this.serverModalVisible = true;
+                this.hide = false;
             },
             remove(v) {
                 this.$Modal.confirm({
