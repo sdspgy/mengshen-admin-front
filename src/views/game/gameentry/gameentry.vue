@@ -34,39 +34,39 @@
         <Modal :title="modalTitle" v-model="serverModalVisible" :mask-closable="false" :width="500">
             <Form ref="gameForm" :model="gameForm" :label-width="80" :rules="gameFormValidate">
                 <!--                <FormItem label="游戏ID" prop="gameid"><Input v-model="creativeForm.gameid" placeholder=""/></FormItem>-->
-                <FormItem label="id" prop="parentId" :error="errorServerid" v-if="hide" ><Input
+                <FormItem label="id" prop="parentId" :error="errorid" v-if="hide" ><Input
                         v-model="gameForm.parentId"/></FormItem>
-                <FormItem label="游戏id" prop="gameid" :error="errorServerid"><Input
+                <FormItem label="游戏id" prop="gameid" :error="errorGameid"><Input
                         v-model="gameForm.gameid"/></FormItem>
-                <FormItem label="游戏名" prop="name" :error="errorServerid"><Input
+                <FormItem label="游戏名" prop="name" :error="errorGameName"><Input
                         v-model="gameForm.name"/></FormItem>
-                <FormItem label="游戏别名" prop="alias" :error="errorServerid"><Input
+                <FormItem label="游戏别名" prop="alias" :error="errorAlias"><Input
                         v-model="gameForm.alias"/></FormItem>
-                <FormItem label="游戏logo，服务器图片地址" prop="logo" :error="errorServerName"><Input
+                <FormItem label="游戏logo，服务器图片地址" prop="logo" :error="errorLogo"><Input
                         v-model="gameForm.logo"/></FormItem>
-                <FormItem label="月KPI" prop="monthKpi" :error="errorServerName"><Input
+                <FormItem label="月KPI" prop="monthKpi" :error="errorMonthKpi"><Input
                         v-model="gameForm.monthKpi"/></FormItem>
-                <FormItem label="年KPI" prop="yearKpi" :error="errorServerName"><Input
+                <FormItem label="年KPI" prop="yearKpi" :error="errorYearKpi"><Input
                         v-model="gameForm.yearKpi"/></FormItem>
-                <FormItem label="当月总收入" prop="currMonthKpi" :error="errorServerName"><Input
+                <FormItem label="当月总收入" prop="currMonthKpi" :error="errorCurrMonthKpi"><Input
                         v-model="gameForm.currMonthKpi"/></FormItem>
-                <FormItem label="当年总收入" prop="currYearKpi" :error="errorServerName"><Input
+                <FormItem label="当年总收入" prop="currYearKpi" :error="errorCurrYearKpi"><Input
                         v-model="gameForm.currYearKpi"/></FormItem>
-                <FormItem label="货币类型" prop="currency" :error="errorServerName"><Input
+                <FormItem label="货币类型" prop="currency" :error="errorCurrency"><Input
                         v-model="gameForm.currency"/></FormItem>
-                <FormItem label="货币汇率（相较RMB)" prop="currencyRate" :error="errorServerName"><Input
+                <FormItem label="货币汇率（相较RMB)" prop="currencyRate" :error="errorCurrencyRate"><Input
                         v-model="gameForm.currencyRate"/></FormItem>
-                <FormItem label="是否开启etl" prop="stats" :error="errorServerName"><Input
+                <FormItem label="是否开启etl" prop="stats" :error="errorSstats"><Input
                         v-model="gameForm.stats"/></FormItem>
-                <FormItem label="世界时区" prop="timeZone" :error="errorServerName"><Input
+                <FormItem label="世界时区" prop="timeZone" :error="errorTimeZone"><Input
                         v-model="gameForm.timeZone"/></FormItem>
-                <FormItem label="安装总用户" prop="install" :error="errorServerName"><Input
+                <FormItem label="安装总用户" prop="install" :error="errorInstall"><Input
                         v-model="gameForm.install"/></FormItem>
-                <FormItem label="付费总额" prop="payAmount" :error="errorServerName"><Input
+                <FormItem label="付费总额" prop="payAmount" :error="errorPayAmount"><Input
                         v-model="gameForm.payAmount"/></FormItem>
-                <FormItem label="统计几日留存 0 不开启日志统计" prop="retention" :error="errorServerName"><Input
+                <FormItem label="统计几日留存 0 不开启日志统计" prop="retention"><Input
                         v-model="gameForm.retention"/></FormItem>
-                <FormItem label="上线时间" prop="onlineDate" :error="errorServerName">
+                <FormItem label="上线时间" prop="onlineDate" :error="errorOnlineDate">
                     <DatePicker v-model="gameForm.onlineDate"
                                 type="datetime"
                                 format="yyyy-MM-dd HH:mm:ss"
@@ -74,7 +74,7 @@
                                 style="width: 200px">
                     </DatePicker>
                 </FormItem>
-                <FormItem label="etl触发时间" prop="etlTriggerTime" :error="errorServerName">
+                <FormItem label="etl触发时间" prop="etlTriggerTime" :error="EtlTriggerTime">
                     <DatePicker v-model="gameForm.etlTriggerTime"
                                 type="datetime"
                                 format="yyyy-MM-dd HH:mm:ss"
@@ -82,11 +82,11 @@
                                 style="width: 200px">
                     </DatePicker>
                 </FormItem>
-                <FormItem label="etl触发id" prop="etlTriggerId" :error="errorServerName"><Input
+                <FormItem label="etl触发id" prop="etlTriggerId"><Input
                         v-model="gameForm.etlTriggerId"/></FormItem>
-                <FormItem label="etl当前状态" prop="etlStatus" :error="errorServerName"><Input
+                <FormItem label="etl当前状态" prop="etlStatus"><Input
                         v-model="gameForm.etlStatus"/></FormItem>
-                <FormItem label="统计优先级" prop="etlOrder" :error="errorServerName"><Input
+                <FormItem label="统计优先级" prop="etlOrder"><Input
                         v-model="gameForm.etlOrder"/></FormItem>
             </Form>
             <div slot="footer">
@@ -375,12 +375,72 @@
                     if (valid) {
                         if (this.modalType == 0) {
                             // 添加 避免编辑后传入id
+                            if (this.gameForm.parentId == '' || this.gameForm.parentId == undefined) {
+                                this.errorid = '编号id不能为空';
+                                return;
+                            }
                             if (this.gameForm.gameid == '' || this.gameForm.gameid == undefined) {
-                                this.errorServerid = '游戏id不能为空';
+                                this.errorGameid = '游戏id不能为空';
                                 return;
                             }
                             if (this.gameForm.name == '' || this.gameForm.name == undefined) {
-                                this.errorServerName = '游戏名不能为空';
+                                this.errorGameName = '游戏名不能为空';
+                                return;
+                            }
+                            if (this.gameForm.alias == '' || this.gameForm.alias == undefined) {
+                                this.errorAlias = '游戏别名不能为空';
+                                return;
+                            }
+                            if (this.gameForm.logo == '' || this.gameForm.logo == undefined) {
+                                this.errorLogo = '游戏Logo不能为空';
+                                return;
+                            }
+                            if (this.gameForm.monthKpi == '' || this.gameForm.monthKpi == undefined) {
+                                this.errorMonthKpi = '游戏月KPI不能为空';
+                                return;
+                            }
+                            if (this.gameForm.yearKpi == '' || this.gameForm.yearKpi == undefined) {
+                                this.errorYearKpi = '游戏年KPI不能为空';
+                                return;
+                            }
+                            if (this.gameForm.currMonthKpi == '' || this.gameForm.currMonthKpi == undefined) {
+                                this.errorCurrMonthKpi = '游戏当月总收入不能为空';
+                                return;
+                            }
+                            if (this.gameForm.currYearKpi == '' || this.gameForm.currYearKpi == undefined) {
+                                this.errorCurrYearKpi = '游戏当年总收入不能为空';
+                                return;
+                            }
+                            if (this.gameForm.currency == '' || this.gameForm.currency == undefined) {
+                                this.errorCurrency = '游戏货币类型不能为空';
+                                return;
+                            }
+                            if (this.gameForm.currencyRate == '' || this.gameForm.currencyRate == undefined) {
+                                this.errorCurrencyRate = '游戏货币汇率不能为空';
+                                return;
+                            }
+                            if (this.gameForm.stats == '' || this.gameForm.stats == undefined) {
+                                this.errorSstats = '游戏是否开启elt状态不能为空';
+                                return;
+                            }
+                            if (this.gameForm.timeZone == '' || this.gameForm.timeZone == undefined) {
+                                this.errorTimeZone = '游戏世界时区不能为空';
+                                return;
+                            }
+                            if (this.gameForm.install == '' || this.gameForm.install == undefined) {
+                                this.errorInstall = '游戏总安装数不能为空';
+                                return;
+                            }
+                            if (this.gameForm.payAmount == '' || this.gameForm.payAmount == undefined) {
+                                this.errorPayAmount = '游戏总付费额不能为空';
+                                return;
+                            }
+                            if (this.gameForm.onlineDate == '' || this.gameForm.onlineDate == undefined) {
+                                this.errorOnlineDate = '游戏上线时间不能为空';
+                                return;
+                            }
+                            if (this.gameForm.etlTriggerTime == '' || this.gameForm.etlTriggerTime == undefined) {
+                                this.EtlTriggerTime = '游戏elt触发时间不能为空';
                                 return;
                             }
                             this.submitLoading = true;
