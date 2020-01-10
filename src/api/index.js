@@ -35,7 +35,7 @@ export const getUploadImgConfig = (params) => {
 export const uploadImg = (params) => {
     return postRequestWithUpload('/upload/file', params)
 }
-Ω
+
 // 登陆
 export const login = (params) => {
     return postRequest('/login', params)

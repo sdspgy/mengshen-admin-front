@@ -371,7 +371,6 @@
             },
             submitServer() {
                 this.$refs.gameForm.validate(valid => {
-                    debugger
                     if (valid) {
                         if (this.modalType == 0) {
                             // 添加 避免编辑后传入id
