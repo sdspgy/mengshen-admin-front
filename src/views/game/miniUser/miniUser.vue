@@ -31,26 +31,53 @@
                 :width="500"
                 :styles="{top: '30px'}"
         >
-            <Form ref="form" :model="form" :label-width="70">
+            <Form ref="userForm" :model="userForm" :label-width="70">
+                <!--                <FormItem label="角色分配" prop="roles">-->
+                <!--                    <Select v-model="userForm.roles" multiple>-->
+                <!--                        <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name">-->
+                <!--                            <span style="margin-right:10px;">{{ item.name }}</span>-->
+                <!--                            &lt;!&ndash;                            <span style="color:#ccc;">{{ item.description }}</span>&ndash;&gt;-->
+                <!--                        </Option>-->
+                <!--                    </Select>-->
+                <!--                </FormItem>-->
                 <FormItem label="角色分配" prop="roles">
-                    <Select v-model="form.roles" multiple>
-                        <Option v-for="item in roleList" :value="item.id" :key="item.id" :label="item.name">
-                            <span style="margin-right:10px;">{{ item.name }}</span>
-                            <span style="color:#ccc;">{{ item.description }}</span>
-                        </Option>
+                    <Select v-model="userForm.roles" style="width:200px">
+                        <Option v-for="item in roleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
                 </FormItem>
             </Form>
             <div slot="footer">
                 <Button type="text" @click="ModalVisible = false">取消</Button>
-                <Button type="primary" :loading="submitLoading" @click="submit">提交</Button>
+                <Button type="primary" :loading="submitLoading" @click="submitMiniUser">提交</Button>
+            </div>
+        </Modal>
+
+        <Modal
+                :title="modalGrantTitle"
+                v-model="ModalVisibleGrant"
+                :mask-closable="false"
+                :width="500"
+                :styles="{top: '30px'}"
+        >
+            <Form ref="gameForm" :model="gameForm" :label-width="70">
+                <FormItem label="游戏分配" prop="games">
+                    <Select v-model="gameForm.games" multiple>
+                        <Option v-for="item in games" :value="item.id" :key="item.id" :label="item.name">
+                            <span style="margin-right:10px;">{{ item.name }}</span>
+                        </Option>
+                    </Select>
+                </FormItem>
+            </Form>
+            <div slot="footer">
+                <Button type="text" @click="ModalVisibleGrant = false">取消</Button>
+                <Button type="primary" :loading="submitLoading" @click="submitMiniGrant">提交</Button>
             </div>
         </Modal>
     </div>
 </template>
 
 <script>
-    import {queryAllUser} from '@/api/index';
+    import {queryAllUser, getAllMiniRoleList, editMiniUser, getAllGame, editMiniUserGrant} from '@/api/index';
 
     export default {
         name: "miniUser",
@@ -119,9 +146,26 @@
                                         }
                                     }
                                 },
-                                '编辑'
+                                '角色分配'
                             );
-                            return h('div', [editButton]);
+                            let grantButton = h(
+                                'Button',
+                                {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small',
+                                        disabled: !this.$route.meta.permTypes.includes('add')
+                                    },
+                                    style: {marginRight: '5px'},
+                                    on: {
+                                        click: () => {
+                                            this.add(params.row);
+                                        }
+                                    }
+                                },
+                                '授权游戏'
+                            );
+                            return h('div', [editButton, grantButton]);
                         }
                     }
                 ],
@@ -131,19 +175,29 @@
                     pageNumber: 1,
                     pageSize: 10
                 },
-                form: {
+                miniUserForm: [],
+                userForm: {
                     roles: []
+                },
+                gameForm: {
+                    games: []
                 },
                 roleList: [],
                 modalType: 1,
                 modalTitle: '分配角色',
+                modalGrantTitle: '分配游戏',
                 ModalVisible: false,
+                ModalVisibleGrant: false,
                 total: 0,
                 submitLoading: false,
-            };
+                games: [],
+            }
+                ;
         },
         mounted() {
             this.init();
+            this.getRoleList();
+            this.getGames();
         },
         methods: {
             init() {
@@ -175,7 +229,7 @@
             edit(v) {
                 this.modalType = 1;
                 this.modalTitle = '角色分配';
-                this.$refs.form.resetFields();
+                this.$refs.userForm.resetFields();
                 let openId = v.openId;
 
                 // 转换null为""
@@ -186,8 +240,74 @@
                 }
                 let str = JSON.stringify(v);
                 let data = JSON.parse(str);
-                this.advertForm = data;
+                this.miniUserForm = data;
                 this.ModalVisible = true;
+            },
+            add(v) {
+                this.modalGrantTitle = '分配游戏';
+                this.$refs.userForm.resetFields();
+                let openId = v.openId;
+
+                // 转换null为""
+                for (let attr in v) {
+                    if (v[attr] == null) {
+                        v[attr] = '';
+                    }
+                }
+                let str = JSON.stringify(v);
+                let data = JSON.parse(str);
+                this.miniUserForm = data;
+                this.ModalVisibleGrant = true;
+            },
+            submitMiniUser() {
+                this.$refs.userForm.validate(valid => {
+                    if (valid) {
+                        // 编辑
+                        this.submitLoading = true;
+                        editMiniUser({
+                            openId: this.miniUserForm.openId,
+                            roleId: this.userForm.roles,
+                        }).then(res => {
+                            this.submitLoading = false;
+                            if (res.success) {
+                                this.$Message.success("操作成功");
+                                this.ModalVisible = false;
+                            }
+                        });
+                    }
+                });
+            },
+            submitMiniGrant() {
+                this.$refs.gameForm.validate(valid => {
+                    if (valid) {
+                        // 编辑
+                        this.submitLoading = true;
+                        editMiniUserGrant({
+                            openId: this.miniUserForm.openId,
+                            gameIds: this.gameForm.games,
+                        }).then(res => {
+                            this.submitLoading = false;
+                            if (res.success) {
+                                this.$Message.success("操作成功");
+                                this.ModalVisibleGrant = false;
+                            }
+                        });
+                    }
+                });
+            },
+            getRoleList() {
+                getAllMiniRoleList().then(res => {
+                    if (res.success) {
+                        this.roleList = JSON.parse(res.msg);
+                    }
+                });
+            },
+            getGames() {
+                getAllGame().then(res => {
+                    if (res.success) {
+                        this.games = JSON.parse(res.msg);
+                    }
+                })
             },
         }
     }

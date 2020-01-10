@@ -1,10 +1,11 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+import G2 from '@antv/g2'
 import iView from 'iview'
 import iviewArea from 'iview-area'
 import App from './App'
-import { router } from './router/index'
+import {router} from './router/index'
 import store from './store'
 import 'iview/dist/styles/iview.css'
 import i18n from '@/locale'
@@ -14,8 +15,8 @@ import 'vue-awesome/icons/brands/qq'
 import 'vue-awesome/icons/brands/weixin'
 import 'vue-awesome/icons/brands/weibo'
 import 'vue-awesome/icons/brands/github'
-import { getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest } from '@/libs/axios'
-import { setStore, getStore, removeStore } from '@/libs/storage'
+import {getRequest, postRequest, putRequest, deleteRequest, uploadFileRequest} from '@/libs/axios'
+import {setStore, getStore, removeStore} from '@/libs/storage'
 import util from '@/libs/util'
 import dictUtil from '@/libs/dictUtil'
 import hasPermission from '@/libs/hasPermission'
@@ -38,7 +39,8 @@ Vue.use(VueClipboard);
 Vue.component('icon', Icon);
 Vue.use(hasPermission);
 Vue.use(hasRole);
-Vue.use(VueApexCharts)
+Vue.use(VueApexCharts);
+Vue.use(G2);
 Vue.component('apexchart', VueApexCharts)
 // 挂载全局使用的方法
 Vue.prototype.getRequest = getRequest;

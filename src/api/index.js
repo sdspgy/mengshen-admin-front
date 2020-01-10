@@ -35,7 +35,7 @@ export const getUploadImgConfig = (params) => {
 export const uploadImg = (params) => {
     return postRequestWithUpload('/upload/file', params)
 }
-
+Ω
 // 登陆
 export const login = (params) => {
     return postRequest('/login', params)
@@ -492,6 +492,18 @@ export const deleteClient = (ids, params) => {
  */
 export const queryAllUser = (params) => {
     return postRequestMinipro('/report/api/user/findAllUser', params)
+}
+export const getAllMiniRoleList = (params) => {
+    return postRequestMinipro('/report/api/role/findAllRole', params)
+}
+export const editMiniUser = (params) => {
+    return postRequestMinipro('/report/api/user/GrantUserRole', params)
+}
+export const getAllGame = (params) => {
+    return postRequestMinipro('/report/api/game/manager/gameManager', params)
+}
+export const editMiniUserGrant = (params) => {
+    return postRequestMinipro('/report/api/gamesIdsByOpenId', params)
 }
 /**
  * 日报下载---------------------------------------------------------------------
