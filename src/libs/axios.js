@@ -262,6 +262,37 @@ export const getRequestMinipro = (url, params) => {
     });
 }
 
+export const postRequestMini = (url, params) => {
+    return axios({
+        method: 'post',
+        url: `${basePathMinipro}${url}`,
+        data: params,
+        transformRequest: [function (data) {
+            let ret = '';
+            for (let it in data) {
+                ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&';
+            }
+            return ret;
+        }],
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'token': '413e3c4a-4d19-45ec-9304-caea6c0e6e25'
+        }
+    });
+}
+
+export const postRequestMiniNoTF = (url, params) => {
+    return axios({
+        method: 'post',
+        url: `${basePathMinipro}${url}`,
+        data: params,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'token': '413e3c4a-4d19-45ec-9304-caea6c0e6e25'
+        }
+    });
+}
+
 export const postRequestMinipro = (url, params) => {
     return axios({
         method: 'post',

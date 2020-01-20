@@ -11,8 +11,8 @@
         </Row>
         <Button @click="download" type="info">下载</Button>
         <!-- 创建图表容器 -->
-        <div id="c1"></div>
-        <Button @click="changeAntvData" type="info">Antv</Button>
+<!--        <div id="c1"></div>-->
+<!--        <Button @click="changeAntvData" type="info">Antv</Button>-->
     </div>
 
 </template>
@@ -42,7 +42,7 @@
         methods: {
             init() {
                 this.getGames();
-                this.antvG2Text();
+                // this.antvG2Text();
             },
             changeAntvData() {
                 const data = [
