@@ -1,8 +1,6 @@
 <template>
     <div>
         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-            <Form-item label="游戏ID" prop="gameid"><Input type="text" v-model="searchForm.gameid" clearable
-                                                         placeholder="请输入游戏id" style="width: 200px"/></Form-item>
             <!-- <span v-if="drop"> -->
             <Form-item label="按用户或设备" prop="source">
                 <Select v-model="searchForm.source" style="width:200px">
@@ -45,9 +43,14 @@
             </Form-item>
         </Form>
         <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
+        <div id="surveyOneLine"></div>
         <Row>
             <Table :loading="loading" border :columns="columnspro" :data="data"   sortable="custom" ref="table"></Table>
             <!-- <Table :columns="exportColumns" :data="exportData" ref="exportTable" style="display:none"></Table> -->
+        </Row>
+        <Row v-if="showcc">
+            <Table height="300" highlight-row border :columns="columnscc" :data="sharePayResultTypesCC"
+                   ref="table"></Table>
         </Row>
     </div>
 </template>
@@ -81,7 +84,7 @@
                         fixed: 'left'
                     },
                     {
-                        title: '日期',
+                        title: '日期(星期)',
                         key: 'ds',
                         width: 150
                         // sortable: true
@@ -172,6 +175,63 @@
                     // 	width: 150
                     // },
                 ],
+                columnscc:[
+                    {
+                        title: '日期(星期)',
+                        key: 'ds',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '操作系统',
+                        key: 'os',
+                        width: 150,
+                        // sortable: true,
+                        // fixed: 'left'
+                    },
+                    {
+                        title: '注册数',
+                        key: 'installNum',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费率',
+                        key: 'payInstallRate',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费ARPU',
+                        key: 'payInstallARPU',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费ARPPU',
+                        key: 'payInstallARPPU',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费人数',
+                        key: 'payInstallCount',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费总额',
+                        key: 'payInstallAmount',
+                        width: 150
+                        // sortable: true
+                    },
+                    {
+                        title: '新付费次数',
+                        key: 'payInstallTimes',
+                        width: 150
+                        // sortable: true
+                    },
+                ],
                 data: [
 
                 ],
@@ -179,7 +239,7 @@
                     source: '0',
                     creativeid:'',
                     clientid:'',
-                    gameid: 1,
+                    gameid: parseInt(this.getStore('gameid')),
                     day: '7',
                     os: '0',
                     page:1
@@ -191,9 +251,12 @@
                 clients:[],
                 clientmap:[],
                 creativemap:[],
+                surveyOneLine: {},
+                datas: [],
                 key:'all',
                 showcreative:false,
-                showclient:false
+                showclient:false,
+                showcc:true
             };
         },
         methods: {
@@ -232,6 +295,10 @@
                         allObject.key = '0';
                         allObject.name = '全渠道';
                         this.creativemap.unshift(allObject);
+                        let creativeMap = new Map();
+                        this.creativemap.forEach((item, index) => {
+                            creativeMap.set(item.key, item.name)
+                        })
                         //
                         this.clientmap = (res.clients).map(item =>({
                             key:item.serverid,
@@ -241,26 +308,41 @@
                         allObject2.key = '-1'
                         allObject2.name = '所有服'
                         this.clientmap.unshift(allObject2);
+                        let clientMap = new Map();
+                        this.clientmap.forEach((item, indx) => {
+                            clientMap.set(item.key, item.name)
+                        })
 
-                        this.data = this.tableDataProcess(res.msg);
+                        this.data = this.tableDataProcess(res.msg,creativeMap,clientMap);
+                        this.sharePayResultTypesCC = this.tableDataProcess(res.sharePayResultTypesCC,creativeMap,clientMap);
+
+                        let datac = [];
+                        this.data.forEach(item=>{
+                            datac.push(item.installNum);
+                        });
+                        this.datas = this.f2DI(datac,this.searchForm.day, this.data,0);
+                        this.surveyOneLine.changeData(this.datas);
+
                     }
                 });
             },
             showclients(val) {
-                debugger
                 if (val=='all'){
                     this.showcreative=false;
                     this.showclient=false;
+                    this.showcc=true;
                     delete this.searchForm.creative;
                     this.searchForm.clientid='';
                 }else if(val=='creative'){
                     this.showcreative=true;
                     this.showclient=false;
+                    this.showcc=false;
                     this.searchForm.creative = '0';
                     this.searchForm.clientid='';
                 }else {
                     this.showcreative=false;
                     this.showclient=true;
+                    this.showcc=false;
                     delete this.searchForm.creative;
                     this.searchForm.clientid = '-1';
                 }
@@ -277,13 +359,122 @@
                     }
                 })
             },
-            tableDataProcess(data){
+            weekFunction: function (ds) {
+                let week = new Date(ds);
+                let dateweek = week.getDay();
+                let i = 7 - dateweek;
+                switch (i) {
+                    case 7:
+                        ds = ds + "(七)";
+                        break
+                    case 1:
+                        ds = ds + "(六)";
+                        break
+                    case 2:
+                        ds = ds + "(五)";
+                        break
+                    case 3:
+                        ds = ds + "(四)";
+                        break
+                    case 4:
+                        ds = ds + "(三)";
+                        break
+                    case 5:
+                        ds = ds + "(二)";
+                        break
+                    case 6:
+                        ds = ds + "(一)";
+                        break
+                    default:
+                }
+                return ds;
+            },
+            surveyOneLineChart() {
+                /*---------------------单折线图-------------------*/
+                this.surveyOneLine = new G2.Chart({
+                    container: 'surveyOneLine',
+                    forceFit: true,
+                    height: 500
+                });
+                this.surveyOneLine.source(this.datas, {});
+                this.surveyOneLine.scale('value', {
+                    min: 0,
+                    alias: '人数',
+                });
+                this.surveyOneLine.scale('time', {
+                    // range: [0, 1]
+                    tickCount: 6,
+                });
+                this.surveyOneLine.tooltip({
+                    crosshairs: {
+                        type: 'line'
+                    }
+                });
+                // 坐标轴文本旋转
+                this.surveyOneLine.axis('time', {
+                    label: {
+                        rotate: -Math.PI / 2.5,
+                        textAlign: 'end',
+                        textBaseline: 'middle'
+                    }
+                });
+                this.surveyOneLine.line().position('time*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                this.surveyOneLine.point().position('time*value')
+                    .size(4)
+                    .shape('circle')
+                    .style({
+                        stroke: '#fff',
+                        lineWidth: 1
+                    })
+                    .color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                this.surveyOneLine.area().position('time*value').shape('smooth').color('l(0) 0:#F2C587 0.5:#ED7973 1:#8659AF');
+                this.surveyOneLine.render();
+                // return this.surveyOneLine;
+            },
+            f2DI: function (data, date, listData, type) {
+                let datas = [];
+                if (date == 0 || date == 1) {
+                    listData.forEach(info => {
+                        let item = new Object();
+                        if (type == 0) {
+                            item.value = info.dauNum;
+                        } else {
+                            item.value = info.installNum;
+                        }
+                        item.time = info.dayOfHour + '时';
+                        datas.push(item);
+                    });
+                } else {
+                    data.forEach((item, index) => {
+                        let info = new Object();
+                        info.time = this.getTime(index);
+                        info.value = item;
+                        datas.push(info);
+                    });
+                }
+                if (date == "7" || date == "30" || date == "0") {
+                    //该方法会改变原来的数组，而不会创建新的数组
+                    datas.reverse();
+                }
+                return datas;
+            },
+            getTime: function (index) {
+                let myDate = new Date();
+                myDate.setTime(myDate.getTime() - 24 * 60 * 60 * 1000 * (index + 1));
+                let dateTime = (myDate.getMonth() + 1) + "-" + myDate.getDate();
+                return dateTime;
+            },
+            tableDataProcess(data, creativeMap, clientMap){
                 if (data) {
                     data.forEach((item) => {
-                        debugger
+                        item.ds = this.weekFunction(item.ds);
+                        item.client = clientMap.get(String(item.clientid)) === undefined ? item.client : clientMap.get(String(item.clientid));
+                        item.creative = creativeMap.get(item.creative) === undefined ? item.creative : creativeMap.get(item.creative);
                         item.payInstallRate = item.installNum == 0 ? 0 : (item.payInstallCount * 100 / item.installNum).toFixed(2) + "%";
                         item.payInstallARPU = item.installNum == 0 ? 0 : (item.payInstallAmount / item.installNum).toFixed(2);
                         item.payInstallARPPU = item.payInstallCount == 0 ? 0 : (item.payInstallAmount / item.payInstallCount).toFixed(2);
+                        item.payInstallAmount = item.payInstallAmount / this.getStore("currencyRate");
+
                     })
                 }
                 return data;
@@ -291,6 +482,7 @@
         },
         mounted() {
             this.init();
+            this.surveyOneLineChart();
         }
     }
 </script>

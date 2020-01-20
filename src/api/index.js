@@ -508,6 +508,9 @@ export const deleteGame = (ids, params) => {
 /**
  * 小程序管理-----------------------------------------------------------------
  */
+export const queryAllPayReq = (params) => {
+    return postRequestMini('/report/api/pay/query', params)
+}
 export const queryAllUser = (params) => {
     return postRequestMinipro('/report/api/user/findAllUser', params)
 }
