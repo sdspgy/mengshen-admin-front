@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div>
+        <div v-show="isShow" >
             <RadioGroup v-model="isDevice" @on-change="init()">
                 <Radio label="用户"></Radio>
                 <Radio label="设备"></Radio>
@@ -75,6 +75,7 @@
         name: "reportData",
         data() {
             return {
+                isShow: true,
                 isDevice: '用户',
                 phone: 'ALL',
                 data: '7日',
@@ -361,6 +362,11 @@
         },
         methods: {
             init() {
+                if(this.getStore('parentId') == 0){
+                    this.isShow = true
+                }else {
+                    this.isShow = false
+                }
                 this.initTable();
                 this.queryDaily();
             },

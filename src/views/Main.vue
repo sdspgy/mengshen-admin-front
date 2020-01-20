@@ -266,6 +266,7 @@
                 this.games.forEach(item => {
                     if (item.gameid === gameid) {
                         this.setStore("currencyRate", item.currencyRate);
+                        this.setStore("parentId", item.parentId);
                     }
                 })
             },

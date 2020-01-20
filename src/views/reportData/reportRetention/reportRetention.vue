@@ -492,6 +492,12 @@
         },
         methods: {
             init() {
+                if(this.getStore('parentId') == 0){
+                    this.isShow = true
+                }else {
+                    this.isShow = false
+                }
+
                 // show渠道/服选择器
                 if (parseInt(this.creativeOrClient) == this.defaultCreativeOrClient.creative || parseInt(this.creativeOrClient) == this.defaultCreativeOrClient.client) {
                     this.showCreativeOrClient = true;
@@ -636,7 +642,7 @@
                             creativeMap.set(item.key, item.name)
                         })
 
-                        let idea = [];
+                        let clientNames = [];
                         clientNames.push('所有服');
                         (e.clients).forEach(item => {
                             clientNames.push(item.serverName);
