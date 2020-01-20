@@ -14,6 +14,8 @@ import {
     postReq,
     getRequestMinipro,
     postRequestMinipro,
+    postRequestMini,
+    postRequestMiniNoTF,
     deleteRequestMinipro,
     downloadReport
 } from '@/libs/axios';
@@ -501,7 +503,7 @@ export const editGame = (params) => {
     return postRequest('/game/updateGame', params)
 }
 export const deleteGame = (ids, params) => {
-       return deleteRequest(`/game/delGameByIds/${ids}`, params)
+    return deleteRequest(`/game/delGameByIds/${ids}`, params)
 }
 /**
  * 小程序管理-----------------------------------------------------------------
@@ -520,6 +522,31 @@ export const getAllGame = (params) => {
 }
 export const editMiniUserGrant = (params) => {
     return postRequestMinipro('/report/api/gamesIdsByOpenId', params)
+}
+
+export const queryDaily = (params) => {
+    return postRequestMini('/report/api/daily', params)
+}
+export const queryRetention = (params) => {
+    return postRequestMini('/report/api/retention', params)
+}
+export const queryPayRetention = (params) => {
+    return postRequestMini('/report/api/payRetention', params)
+}
+export const queryLevel = (params) => {
+    return postRequestMini('/report/api/levelDistribution', params)
+}
+export const queryPaymentBehavior = (params) => {
+    return postRequestMini('/report/api/paymentBehavior', params)
+}
+export const queryVisit = (params) => {
+    return postRequestMini('/report/api/visitTrending', params)
+}
+export const queryDevice = (params) => {
+    return postRequestMini('/report/api/deviceDis', params)
+}
+export const queryOnline = (params) => {
+    return postRequestMini('/report/api/online', params)
 }
 /**
  * 日报下载---------------------------------------------------------------------

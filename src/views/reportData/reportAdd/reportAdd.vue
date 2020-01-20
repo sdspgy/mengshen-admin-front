@@ -292,7 +292,7 @@
         mounted() {
             this.init();
         }
-    };
+    }
 </script>
 
 <style scoped>
