@@ -3,13 +3,13 @@
         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
             <!-- <span v-if="drop"> -->
             <Form-item label="按用户或设备" prop="source">
-                <Select v-model="searchForm.source" style="width:200px">
+                <Select v-model="searchForm.source"  @on-change="handleSearch" style="width:200px">
                     <Option value="0">按用户</Option>
                     <Option value="1">按设备</Option>
                 </Select>
             </Form-item>
             <Form-item label="按OS" prop="os">
-                <Select v-model="searchForm.os" style="width:200px">
+                <Select v-model="searchForm.os"  @on-change="handleSearch" style="width:200px">
                     <Option value="0">all</Option>
                     <Option value="1">android</Option>
                     <Option value="2">ios</Option>
@@ -17,7 +17,7 @@
                 </Select>
             </Form-item>
             <Form-item label="日期" prop="day">
-                <Select v-model="searchForm.day" style="width:200px">
+                <Select v-model="searchForm.day" @on-change="handleSearch" style="width:200px">
                     <Option value="0">今天</Option>
                     Option             <Option value="1">昨天</Option>
                     <Option value="7">7天</Option>
@@ -42,15 +42,17 @@
                 </Select>
             </Form-item>
         </Form>
-        <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
         <div id="surveyOneLine"></div>
         <Row>
-            <Table :loading="loading" border :columns="columnspro" :data="data"   sortable="custom" ref="table"></Table>
+            <Table :loading="loading" border :columns="columnspro" :data="data"  height="300" sortable="custom" ref="table"></Table>
             <!-- <Table :columns="exportColumns" :data="exportData" ref="exportTable" style="display:none"></Table> -->
         </Row>
+        <div class="roundChart" v-if="showcc">
+            <div id="davChart"></div>
+            <div id="installChart"></div>
+        </div>
         <Row v-if="showcc">
-            <Table height="300" highlight-row border :columns="columnscc" :data="sharePayResultTypesCC"
-                   ref="table"></Table>
+            <Table height="300" highlight-row border :columns="columnscc" :data="sharePayResultTypesCC" @on-current-change=onRowTap ref="table"></Table>
         </Row>
     </div>
 </template>
@@ -177,6 +179,12 @@
                 ],
                 columnscc:[
                     {
+                        type: 'index',
+                        width: 60,
+                        align: 'center',
+                        fixed: 'left'
+                    },
+                    {
                         title: '日期(星期)',
                         key: 'ds',
                         width: 150
@@ -252,6 +260,10 @@
                 clientmap:[],
                 creativemap:[],
                 surveyOneLine: {},
+                davChart: {},
+                chartData: [],
+                map_pieChartD: {},
+                map_pieChartI: {},
                 datas: [],
                 key:'all',
                 showcreative:false,
@@ -321,6 +333,7 @@
                             datac.push(item.installNum);
                         });
                         this.datas = this.f2DI(datac,this.searchForm.day, this.data,0);
+                        this.onRowTap(this.sharePayResultTypesCC[1]);
                         this.surveyOneLine.changeData(this.datas);
 
                     }
@@ -333,18 +346,21 @@
                     this.showcc=true;
                     delete this.searchForm.creative;
                     this.searchForm.clientid='';
+                    this.handleSearch();
                 }else if(val=='creative'){
                     this.showcreative=true;
                     this.showclient=false;
                     this.showcc=false;
                     this.searchForm.creative = '0';
                     this.searchForm.clientid='';
+                    this.handleSearch();
                 }else {
                     this.showcreative=false;
                     this.showclient=true;
                     this.showcc=false;
                     delete this.searchForm.creative;
                     this.searchForm.clientid = '-1';
+                    this.handleSearch();
                 }
             },
             handleColumns(access) {
@@ -464,6 +480,107 @@
                 let dateTime = (myDate.getMonth() + 1) + "-" + myDate.getDate();
                 return dateTime;
             },
+            makePieChart: function (info) {
+                let dauNumTotal = 0,
+                    installNumTotal = 0;
+                info.forEach(item => {
+                    dauNumTotal += item.dauNum;
+                    installNumTotal += item.installNum;
+                })
+                var map_pieChartD = {},
+                    map_pieChartI = {};
+                info.map(function (obj) {
+                    map_pieChartD[obj.os] = (obj.dauNum / dauNumTotal * 100).toFixed(2) + '%';
+                    map_pieChartI[obj.os] = (obj.installNum / installNumTotal * 100).toFixed(2) + '%';
+                })
+                this.map_pieChartD = map_pieChartD;
+                this.map_pieChartI = map_pieChartI;
+                return info;
+            },
+            roundChart() {
+                this.davChart = new G2.Chart({
+                    container: 'davChart',
+                    // forceFit: true,
+                    height: 500,
+                    width: 500,
+                })
+                ;
+                this.davChart.source(this.chartData, {});
+                this.davChart.coord('theta', {
+                    radius: 0.75
+                });
+                this.davChart.tooltip({
+                    showTitle: false,
+                    // itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
+                });
+                this.davChart.intervalStack()
+                    .position('dauNum')
+                    .color('os')
+                    .label('dauNum', {
+                        formatter: (val, item) => {
+                            return this.map_pieChartD[item.point.os] + '|' + val;
+                        }
+                    })
+                    .tooltip('os*dauNum', (os, dauNum) => {
+                        return {
+                            name: os,
+                            value: dauNum
+                        };
+                    })
+                    .style({
+                        lineWidth: 1,
+                        stroke: '#fff'
+                    });
+                this.davChart.render();
+
+                this.installChart = new G2.Chart({
+                    container: 'installChart',
+                    // forceFit: true,
+                    height: 500,
+                    width: 500,
+                })
+                ;
+                this.installChart.source(this.chartData, {});
+                this.installChart.coord('theta', {
+                    radius: 0.75
+                });
+                this.installChart.tooltip({
+                    showTitle: false,
+                    // itemTpl: '<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
+                });
+                this.installChart.intervalStack()
+                    .position('installNum')
+                    .color('os')
+                    .label('installNum', {
+                        formatter: (val, item) => {
+                            return this.map_pieChartI[item.point.os] + '|' + val;
+                        }
+                    })
+                    .tooltip('os*installNum', (os, dauNum) => {
+                        return {
+                            name: os,
+                            value: dauNum
+                        };
+                    })
+                    .style({
+                        lineWidth: 1,
+                        stroke: '#fff'
+                    });
+                this.installChart.render();
+            },
+            onRowTap(currentRow, oldCurrentRow){
+                let msg = [];
+                let b = JSON.parse(JSON.stringify(this.sharePayResultTypesCC));
+                b.forEach(item =>{
+                    if(item.ds == currentRow.ds){
+                        var a ={os:item.os,dauNum:item.dauNum,installNum:item.installNum};
+                        msg.push(a);
+                    }
+                })
+                this.chartData = this.makePieChart(msg);
+                this.davChart.changeData(this.chartData);
+                this.installChart.changeData(this.chartData);
+            },
             tableDataProcess(data, creativeMap, clientMap){
                 if (data) {
                     data.forEach((item) => {
@@ -471,9 +588,9 @@
                         item.client = clientMap.get(String(item.clientid)) === undefined ? item.client : clientMap.get(String(item.clientid));
                         item.creative = creativeMap.get(item.creative) === undefined ? item.creative : creativeMap.get(item.creative);
                         item.payInstallRate = item.installNum == 0 ? 0 : (item.payInstallCount * 100 / item.installNum).toFixed(2) + "%";
+                        item.payInstallAmount = item.payInstallAmount / this.getStore("currencyRate");
                         item.payInstallARPU = item.installNum == 0 ? 0 : (item.payInstallAmount / item.installNum).toFixed(2);
                         item.payInstallARPPU = item.payInstallCount == 0 ? 0 : (item.payInstallAmount / item.payInstallCount).toFixed(2);
-                        item.payInstallAmount = item.payInstallAmount / this.getStore("currencyRate");
 
                     })
                 }
@@ -482,11 +599,15 @@
         },
         mounted() {
             this.init();
+            this.roundChart();
             this.surveyOneLineChart();
         }
     }
 </script>
 
 <style scoped>
-
+    .roundChart {
+        display: flex;
+        justify-content: space-around;
+    }
 </style>

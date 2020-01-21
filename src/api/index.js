@@ -511,6 +511,9 @@ export const deleteGame = (ids, params) => {
 export const queryAllPayReq = (params) => {
     return postRequestMini('/report/api/pay/query', params)
 }
+export const queryAllregisteredRevenuePercentageReq = (params) => {
+    return postRequestMini('/report/api/registeredRevenuePercentage', params)
+}
 export const queryAllUser = (params) => {
     return postRequestMinipro('/report/api/user/findAllUser', params)
 }
